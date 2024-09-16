@@ -108,7 +108,7 @@ function App() {
             {/* Expense Name Input */}
             <Input 
               type='text'
-              placeholder='Expense name...'
+              placeholder='Expense name'
               value={expenseName}
               onChange={handleExpenseNameChange}
               error={nameError}
