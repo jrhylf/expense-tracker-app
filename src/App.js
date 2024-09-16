@@ -174,6 +174,12 @@ function App() {
           </div>
         </div>
       </main>
+
+      <footer className='h-14 w-full p-4 flex content-center justify-center text-center'>
+        <span className='h-auto w-max text-base font-normal'>
+          Developed by John Rhyl Fernandez
+        </span>
+      </footer>
     </div>
   );
 }
