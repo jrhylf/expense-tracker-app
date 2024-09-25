@@ -7,9 +7,9 @@ function App() {
   const [currentDate, setCurrentDate] = useState('');
 
   // Currency Exchange
-  const [fromCurrency, setFromCurrency] = useState('');
+  // const [fromCurrency, setFromCurrency] = useState('');
   // Set new currency every currency is changed
-  const [toCurrency, setToCurrency] = useState('');
+  // const [toCurrency, setToCurrency] = useState('');
 
   // Search Currency
   const [searchQuery, setSearchQuery] = useState('');
@@ -192,8 +192,8 @@ function App() {
                           key={curr.code} 
                           onClick={() => {
                             setCurrency(curr.code); // Update the currency state
-                            setFromCurrency(currency); // Previous currency state
-                            setToCurrency(curr.code); // Update the toCurrency state
+                            // setFromCurrency(currency); // Previous currency state
+                            // setToCurrency(curr.code); // Update the toCurrency state
                             setIsOpen(false); // Close dropdown after selection
                             setSearchQuery(''); // Clear search query
                           }}
