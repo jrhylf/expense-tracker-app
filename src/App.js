@@ -1,9 +1,19 @@
 import { Button, Input } from './Components';
 import './App.css';
 import React, { useState, useEffect } from 'react';
+import CurrencyList from './CurrencyList';
 
 function App() {
   const [currentDate, setCurrentDate] = useState('');
+
+  // Currency Exchange
+  const [fromCurrency, setFromCurrency] = useState('');
+  // Set new currency every currency is changed
+  const [toCurrency, setToCurrency] = useState('');
+
+  // Search Currency
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [expenses, setExpenses] = useState(() => {
     const savedExpenses = localStorage.getItem('expenses');
     return savedExpenses ? JSON.parse(savedExpenses) : [];
@@ -21,6 +31,8 @@ function App() {
     const savedCurrency = localStorage.getItem('currency');
     return savedCurrency ? savedCurrency : 'PHP';
   });
+
+  const [isOpen, setIsOpen] = useState(false); // State for dropdown open/close
 
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
@@ -70,11 +82,17 @@ function App() {
     }
 
     if (valid) {
+      // Create a new expense object
       const newExpense = { name: expenseName, price: parseFloat(expensePrice) };
-      setExpenses([...expenses, newExpense]);
-      setExpenseName('');  // Clear the input fields after adding
+      
+      // Update the state with the new expense added to the existing expenses
+      const updatedExpenses = [...expenses, newExpense];
+      setExpenses(updatedExpenses);
+    
+      // Clear the input fields after adding the expense
+      setExpenseName('');
       setExpensePrice('');
-    }
+    }    
   };
 
   // Delete Expense
@@ -93,6 +111,14 @@ function App() {
       currency: currency,
     }).format(amount);
   };
+
+  const currencies = CurrencyList();
+
+  // Find the selected currency object by code
+  const selectedCurrency = currencies.find(curr => curr.code === currency);
+
+  // console.log("From Currency: " + fromCurrency);
+  // console.log("To Currency: " + toCurrency);
 
   return (
     <div className="h-screen min-w-min">
@@ -133,18 +159,53 @@ function App() {
           {/* Currency Selector */}
           <div className='h-auto w-full mb-4'>
             <label htmlFor="currency" className='mr-2'>Currency:</label>
-            <select 
-              id="currency" 
-              value={currency} 
-              onChange={(e) => setCurrency(e.target.value)} 
-              className='h-auto w-full p-2 border rounded-md'>
-              <option value="PHP">PHP - Philippine Peso</option>
-              <option value="USD">USD - US Dollar</option>
-              <option value="EUR">EUR - Euro</option>
-              <option value="JPY">JPY - Japanese Yen</option>
-              <option value="GBP">GBP - British Pound</option>
-              <option value="AUD">AUD - Australian Dollar</option>
-            </select>
+            
+            {/* Custom Currency Selector */}
+            <div className='relative'>
+              <div 
+                className='h-auto w-full p-2 border rounded-md cursor-pointer'
+                onClick={() => setIsOpen(!isOpen)} // Toggle dropdown
+              >
+                {selectedCurrency ? `${selectedCurrency.code} - ${selectedCurrency.name}` : currency}
+              </div>
+
+              {isOpen && (
+                <div className='absolute z-10 w-full bg-white border rounded-md shadow-lg'>
+                  {/* Search Input */}
+                  <input
+                    type="text"
+                    placeholder="Search currency..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+                    className='w-full p-2 border-b'
+                  />
+
+                  {/* Currency List */}
+                  <ul className='max-h-60 overflow-y-auto'>
+                    {currencies
+                      .filter(curr => 
+                        curr.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        curr.code.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                      .map((curr) => (
+                        <li 
+                          key={curr.code} 
+                          onClick={() => {
+                            setCurrency(curr.code); // Update the currency state
+                            setFromCurrency(currency); // Previous currency state
+                            setToCurrency(curr.code); // Update the toCurrency state
+                            setIsOpen(false); // Close dropdown after selection
+                            setSearchQuery(''); // Clear search query
+                          }}
+                          className='p-2 hover:bg-gray-200 cursor-pointer'
+                        >
+                          {curr.code} - {curr.name}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           <span className='h-auto w-max text-xl align-middle'>Expenses</span>
